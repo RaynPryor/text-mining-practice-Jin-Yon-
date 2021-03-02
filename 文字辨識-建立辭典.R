@@ -38,5 +38,5 @@ data <- as_tibble(data[19:199]) %>%
 
 head(data, 4) %>% kable("markdown", align="c")
 
-
+#匯出為txt檔
 write.table(data,file="dictionary.txt",row.names = F,col.names = F,fileEncoding = "UTF-8")
