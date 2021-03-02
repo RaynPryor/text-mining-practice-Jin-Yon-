@@ -216,6 +216,7 @@ wordcloud2(filter(txt_freq, freq > 10),
 
 role = read.table("role_list.txt",encoding = "UTF-8",header = T)
 role_freq <- filter(txt_freq,char %in% role$X.U.FEFF.角色名)
+
 barplot(role_freq$freq, main="Char Frequency",
         xlab="role")
 
@@ -224,7 +225,13 @@ wordcloud2(filter(role_freq, freq > 60),
 
 
 library(ggplot2)
+
 role_freq = filter(role_freq,freq>60)
 df = data.frame(term=role_freq$char, freq=role_freq$freq)
 ggplot(df, aes(x=term, y=freq)) + geom_bar(stat="identity") +
   xlab("角色") + ylab("登場次數") + coord_flip()
+
+
+#結論：在這類敘述性極高的武俠類小說裡，通常是人名(尤其主要角色)的出現頻率偏高
+#要說是理所當然好像也對啦......
+#還有，前作主角(郭靖黃蓉)竟然比本作的主要反派(李莫愁、金輪法王)的出現次數加總還高，這是不是搞錯什麼了......
