@@ -11,12 +11,17 @@ library(knitr)
 
 Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
 
-path <- "https://zh.wikipedia.org/wiki/%E7%A5%9E%E9%B5%B0%E4%BF%A0%E4%BE%B6%E8%A7%92%E8%89%B2%E5%88%97%E8%A1%A8" 
-# 這裡已先行下載網頁，若無可直接使用網址
+path <- "https://zh.wikipedia.org/wiki/%E7%A5%9E%E9%B5%B0%E4%BF%A0%E4%BE%B6%E8%A7%92%E8%89%B2%E5%88%97%E8%A1%A8" # 這裡可先行下載網頁，若無可直接使用網址
 
+# 觀察頁面後，可發現多數與小說相關的詞彙都位在 unordered list 下的連結內文(<a> tag)，因此透過 3 個html_nodes()取得連結，並用html_text()擷取連結內文。
 data <- read_html(path) %>% 
   html_nodes("ul") %>% html_nodes("li") %>%
   html_nodes("a") %>% html_text()
+
+# 接著看看擷取的詞彙，可以發現這些詞彙依照順序大致可區分成三個來源：
+# 1.自維基頁面的目錄擷取之連結
+# 2.內文的連結(這是我們要的)
+# 3.其它連結
 
 data <- unique(data)
 
