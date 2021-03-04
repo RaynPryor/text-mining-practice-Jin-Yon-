@@ -212,7 +212,15 @@ wordcloud2(filter(txt_freq, freq > 10),
            minSize = 2, fontFamily = "Microsoft YaHei", size = 1)
 
 
-# extra: 比較角色出場頻率
+# extra: 
+
+##慣用詞分析
+role = read.table("role_list.txt",encoding = "UTF-8",header = T)
+txt_wordFreq <- txt_freq[ !(txt_freq$char %in% role$X.U.FEFF.角色名), ]
+wordcloud2(filter(txt_wordFreq, freq > 200), 
+           minSize = 2, fontFamily = "Microsoft YaHei", size = 1)
+
+##比較角色出場頻率
 
 role = read.table("role_list.txt",encoding = "UTF-8",header = T)
 role_freq <- filter(txt_freq,char %in% role$X.U.FEFF.角色名)
@@ -234,3 +242,4 @@ readr::write_csv(txt_freq, "txt_freq.csv",encoding = "UTF-8")
 #結論：在這類敘述性文字較高的武俠類小說裡，通常是人名(尤其主要角色)的出現頻率偏高
 #這要說是理所當然好像也對啦......
 #還有，前作主角(郭靖黃蓉)竟然比本作的主要反派(李莫愁、金輪法王)的出現次數加總還高，這是不是搞錯什麼了......
+

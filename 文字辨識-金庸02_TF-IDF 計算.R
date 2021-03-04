@@ -21,7 +21,7 @@ insertWords(dir$V1)
 
 #insertWords(tokens)
 
-role <- c("楊過","小龍女","郭靖","黃蓉","郭芙","郭襄","郭破虜","柯鎮惡","魯有腳","周伯通","瑛姑","王重陽","歐陽鋒","老毒物","黃藥師","洪七公","陸無雙","程英","傻姑","李莫愁","公孫止","公孫綠萼","樊一翁","裘千尺","裘千仞","金輪法王","霍都","達爾巴","獨孤求敗","點蒼漁隱","南海神尼","武修文","武敦儒","武三通","武三娘","耶律楚材","耶律齊","耶律燕","完顏萍","楊鐵心","郭嘯天","洪凌波","陸展元","趙志敬","尹志平","鹿清篤","馬鈺","丘處機","譚處端","劉處玄","郝大通","孫不二","陸冠英","孫婆婆","瀟湘子","尹克西","尼摩星","馬光佐","忽必烈","拖雷","蒙哥","覺遠","張君寶","慈恩","楊康","穆念慈","天竺神僧","馮默風","曲靈風","陸冠英","陸乘風","程瑤迦","神雕","神雕大俠")
+role <- read.table("role_list.txt",encoding = "UTF-8",header = T)
 insertWords(role)
 
 stopwords <- read.table("cn_stopwords.txt",encoding = "UTF-8")
@@ -69,7 +69,9 @@ names(v) <-rn
 dtm <- DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf))) 
 dtm01 <- weightTfIdf(dtm)
 
-dtm02 <- removeSparseTerms(dtm01, 0.87) 
+#可以在全部資料構成的矩陣中，手動剔除一些權重值較低的字詞
+#為了方便觀看設作0.87，設更高則怕文字會太擁擠
+dtm02 <- removeSparseTerms(dtm01, 0.895) 
 
 #不知為啥還是有亂碼
 dtm02$dimnames$Terms[1:3] = c("剎那","吶喊","駡道")

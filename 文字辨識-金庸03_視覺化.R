@@ -25,11 +25,11 @@ Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
 wordcorpus <- VCorpus(VectorSource(dg6.corpus))
 
 tdm <- TermDocumentMatrix(wordcorpus, control = list(wordLengths = c(2, Inf))) 
-dtm<-DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf)))
-
-rownames(dtm) <- rn
 tdm[["dimnames"]][["Terms"]] <-rn
-names(v) <-rn
+dtm<-DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf)))
+dtm[["dimnames"]][["Terms"]] <-rn
+
+
 
 term_tfidf <-tapply(dtm$v/row_sums(dtm)[dtm$i], dtm$j, mean) * log2(nDocs(dtm)/col_sums(dtm > 0))
 l1=term_tfidf >= quantile(term_tfidf, 0.99)
@@ -82,4 +82,5 @@ E(g)$color = unlist(lapply(sample(colors()[26:137], 10), function(i) rep(i, 9)))
 png(paste(getwd(), "/topic_graph_gibbs_", g, "XX",".png", sep=''),width=5, height=5, units="in", res=700)
 plot(g, vertex.label= nodeLabel, edge.curved=TRUE, vertex.label.cex =0.5, edge.arrow.size=0.2, layout=l )
 dev.off()
+
 
