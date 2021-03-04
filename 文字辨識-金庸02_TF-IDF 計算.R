@@ -47,12 +47,33 @@ d<-data.frame(word=names(v),tfidf=v)
 
 write.csv(d, file = "test.csv",fileEncoding = "UTF-8")
 
+#處理亂碼
+#為了讓結果漂亮點，只能改了
+rn = rownames(dtm)
+rn
+# [1] "3016"   "3017"   "5239"   "5450"   "562d"  
+# [6] "59f9"   "5f11"   "64c0"   "6c0a"   "7081"  
+# [11] "7f4e"   "8552"   "98c3"   "99e1"   "一人"  
+
+rn[1:5] <- c("〖","〗","刹那","吶喊","嘭")
+rn[6:10] <- c("姹","弑","擀","氊","炁")
+rn[11:14] <- c("罎","蕒","飃","駡道")
+
+rownames(dtm) <- rn
+tdm[["dimnames"]][["Terms"]] <-rn
+names(v) <-rn
+
 #※詞彙彼此間重要程度關聯
 #依據第一部份TF-IDF的權重值來做dendrogram的圖示
 
 dtm <- DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf))) 
 dtm01 <- weightTfIdf(dtm)
+
 dtm02 <- removeSparseTerms(dtm01, 0.87) 
+
+#不知為啥還是有亂碼
+dtm02$dimnames$Terms[1:3] = c("剎那","吶喊","駡道")
+
 tdm = as.TermDocumentMatrix(dtm02) 
 tdm <- weightTfIdf(tdm)
 mydata.df <- as.matrix(tdm) 

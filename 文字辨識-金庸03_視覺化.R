@@ -8,6 +8,7 @@ library(slam)
 library(topicmodels) 
 library(igraph)
 
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
 
 # csv<- read.csv("神雕俠侶.csv",colClasses="character",encoding = "UTF-8")
 # seg_words <- lapply(csv$content, segmentCN)
@@ -26,6 +27,10 @@ wordcorpus <- VCorpus(VectorSource(dg6.corpus))
 tdm <- TermDocumentMatrix(wordcorpus, control = list(wordLengths = c(2, Inf))) 
 dtm<-DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf)))
 
+rownames(dtm) <- rn
+tdm[["dimnames"]][["Terms"]] <-rn
+names(v) <-rn
+
 term_tfidf <-tapply(dtm$v/row_sums(dtm)[dtm$i], dtm$j, mean) * log2(nDocs(dtm)/col_sums(dtm > 0))
 l1=term_tfidf >= quantile(term_tfidf, 0.99)
 dtm <- dtm[,l1]
@@ -37,8 +42,7 @@ SEED <- 2003
 jss_TM2 <- list(
   VEM = LDA(dtm, k = k, control = list(seed = SEED)),
   VEM_fixed = LDA(dtm, k = k, control = list(estimate.alpha = FALSE, seed = SEED)), Gibbs = LDA(dtm, k = k, method = "Gibbs",
-                                                                                                control = list(seed = SEED, burnin = 1000, thin = 100, iter = 1000)), CTM = CTM(dtm, k = k,
-                                                                                                                                                                                control = list(seed = SEED, var = list(tol = 10^-4), em = list(tol = 10^-3))) ) 
+                                                                                                control = list(seed = SEED, burnin = 1000, thin = 100, iter = 1000)), CTM = CTM(dtm, k = k,control = list(seed = SEED, var = list(tol = 10^-4), em = list(tol = 10^-3))) ) 
 save(jss_TM2, file = paste(getwd(), "/jss_TM2.Rdata", sep = ""))
 # save(jss_TM, file = paste(getwd(), "/jss_TM1.Rdata", sep = ""))
 

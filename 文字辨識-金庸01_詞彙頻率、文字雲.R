@@ -4,7 +4,7 @@
 
 
 #系統參數設定
-Sys.setlocale(category = "LC_ALL", locale = "zh_TW.UTF-8") # 避免中文亂碼
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
 
 require(dplyr)
 require(tidytext)
@@ -150,7 +150,7 @@ Sys.setlocale(category = "LC_ALL", locale = "zh_TW.UTF-8") # 避免中文亂碼
 
 #本文輸入:
 
-Eagle <- file('神雕俠侶.txt',encoding = "UTF-8-BOM")#感謝R友-阿賢提供 encoding="UTF-8-BOM"解決亂碼問題.
+Eagle <- file('神雕俠侶neo.txt',encoding = "UTF-8-BOM")#感謝R友-阿賢提供 encoding="UTF-8-BOM"解決亂碼問題.
 Eagle = readLines(Eagle)
 
 
@@ -181,26 +181,26 @@ txt_freq <- arrange(txt_freq, desc(freq))
 # 檢查前5名
 head(txt_freq, n = 20)
 # char freq
-# 1    楊過 5851
-# 2  小龍女 2049
-# 3    說道 1409
-# 4    郭靖 1398
-# 5    黃蓉 1386
-# 6    甚麼 1315
-# 7    自己 1172
-# 8  李莫愁  983
-# 9    一個  960
-# 10   心中  930
-# 11   武功  906
-# 12   郭芙  853
-# 13   心想  750
-# 14   郭襄  749
-# 15   一聲  730
-# 16   法王  729
-# 17   叫道  698
-# 18   不知  688
-# 19   咱們  683
-# 20   二人  667
+# 1    楊過 5947
+# 2  小龍女 2141
+# 3    說道 1460
+# 4    郭靖 1425
+# 5    黃蓉 1414
+# 6  李莫愁 1020
+# 7    一個  983
+# 8    武功  939
+# 9    郭芙  860
+# 10   郭襄  762
+# 11   一聲  755
+# 12   法王  726
+# 13   叫道  720
+# 14   不知  699
+# 15   二人  687
+# 16   師父  608
+# 17   蒙古  604
+# 18 周伯通  573
+# 19 陸無雙  558
+# 20   突然  553
 
 par(family=("Microsoft YaHei")) #一般wordcloud需要定義字體，不然會無法顯示中文
 
@@ -217,9 +217,6 @@ wordcloud2(filter(txt_freq, freq > 10),
 role = read.table("role_list.txt",encoding = "UTF-8",header = T)
 role_freq <- filter(txt_freq,char %in% role$X.U.FEFF.角色名)
 
-barplot(role_freq$freq, main="Char Frequency",
-        xlab="role")
-
 wordcloud2(filter(role_freq, freq > 60), 
            minSize = 2, fontFamily = "Microsoft YaHei", size = 1)
 
@@ -231,6 +228,8 @@ df = data.frame(term=role_freq60$char, freq=role_freq60$freq)
 ggplot(df, aes(x=term, y=freq)) + geom_bar(stat="identity") +
   xlab("角色") + ylab("登場次數") + coord_flip()
 
+
+readr::write_csv(txt_freq, "txt_freq.csv",encoding = "UTF-8")
 
 #結論：在這類敘述性文字較高的武俠類小說裡，通常是人名(尤其主要角色)的出現頻率偏高
 #這要說是理所當然好像也對啦......
