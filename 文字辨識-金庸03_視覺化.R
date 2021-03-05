@@ -1,5 +1,11 @@
 load("~/R Code/59487.RData")
+
 #※語意主題多樣性以及視覺化
+
+# 隱含狄利克雷分布（簡稱LDA）：
+# 是一種主題建模演算法，廣泛使用於以無監督學習，探索語料庫中的隱含主題（latent topic）。它已被廣泛應用於各個領域，尤其是在自然語言處理和推薦系統中。
+#此外LDA的另一個優點則是，對於每一個主題均可找出一些詞語來描述它。
+#
 
 library(Rwordseg) 
 library(rJava) 
@@ -8,7 +14,7 @@ library(slam)
 library(topicmodels) 
 library(igraph)
 
-Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8-BOM") # 避免中文亂碼
 
 # csv<- read.csv("神雕俠侶.csv",colClasses="character",encoding = "UTF-8")
 # seg_words <- lapply(csv$content, segmentCN)

@@ -1,3 +1,13 @@
+###TF-IDF 計算
+# 
+# 最簡單的詞頻分析就屬TF-IDF了！
+# 
+# 某一特定文件內的高詞語頻率，以及該詞語在整個文件集合中的低文件頻率，可以產生出高權重的TF-IDF。因此，TF-IDF傾向於過濾掉常見的詞語，保留重要的詞語。
+# 
+#※ TF :  該詞在文件d中的出現次數 / 在文件d中所有字詞的出現次數和
+#※ IDF : log(語料庫中的文件總數 / 包含詞語 t 的文件數目)
+
+
 library("tm")
 library("tmcn")
 library("rJava")
@@ -5,29 +15,45 @@ library("Rwordseg")
 library("SnowballC")
 library("slam")
 
-Sys.setlocale(category = "LC_ALL", locale = "UTF-8") # 避免中文亂碼
+#Sys.setlocale(category = "LC_ALL", locale = "UTF-8-BOM") # 避免中文亂碼
+#說是這麼說，跑出亂碼的次數也不下N遍...(以下略
+
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8-BOM") 
+
 
 csv<- read.csv("神雕俠侶.csv",colClasses="character",encoding = "UTF-8")
 
-data(NTUSD)
 
+#導入台灣大學定義的字典到系統中，該字典中含有正面及負面的簡體詞和繁體詞共22173個。這邊我們只用繁體的部分。
+data(NTUSD)
 positive_tradition <- NTUSD[[3]]
 negtive_tradition <- NTUSD[[4]]
 insertWords(positive_tradition)
 insertWords(negtive_tradition)
 
-dir <- read.table("sdxl_wordlist.txt",encoding = "UTF-8")
-insertWords(dir$V1)
+#導入自訂辭典
+dir <- read.csv("sdxl_wordlist.txt", encoding="UTF-8", sep="")
+insertWords(dir$X.U.FEFF.value)
 
 #insertWords(tokens)
 
-role <- read.table("role_list.txt",encoding = "UTF-8",header = T)
-insertWords(role)
+role <- read.csv("role_list.txt", encoding="UTF-8", sep="")
+insertWords(role$X.U.FEFF.角色名)
 
-stopwords <- read.table("cn_stopwords.txt",encoding = "UTF-8")
-stopword <- stopwordsCN(stopwords = stopwords$V1, useStopDic = TRUE)
+#導入指定停止詞
+stopwords <- read.csv("cn_stopwords.txt" ,encoding = "UTF-8", sep="")
+stopword <- stopwordsCN(stopwords = stopwords$X.U.FEFF.停止詞, useStopDic = TRUE)
 
-seg_words <- segmentCN(as.character(csv), returnType = "tm")
+#※分割測試
+#
+test = "楊過隨著小龍女穿越甬道，奔出古墓，大喜無已。"
+test01 <- segmentCN(test, analyzer = "default",returnType = "tm")
+test02 <- segmentCN(test, analyzer = "hmm",returnType = "tm")
+test03 <- segmentCN(test, analyzer = "jiebaR",returnType = "tm")
+#後來證實只有"jiebaR"的分析器才能接收自訂詞彙跟停止詞
+#我才不會承認因為不知道這件事而鬼打牆了大半天......
+
+seg_words <- segmentCN(as.character(csv), analyzer = "jiebaR", returnType = "tm")
 doc.list <- strsplit(as.character(seg_words), split=" ")
 
 dg.corpus <- gsub("'", "", doc.list)
@@ -45,23 +71,9 @@ dtm<-as.matrix(tdm.tfidf)
 v<-sort(rowSums(dtm), decreasing = T) 
 d<-data.frame(word=names(v),tfidf=v)
 
-write.csv(d, file = "test.csv",fileEncoding = "UTF-8")
+#輸出tf-idf表
+write.csv(d, file = "result.csv",fileEncoding = "big-5")
 
-#處理亂碼
-#為了讓結果漂亮點，只能改了
-rn = rownames(dtm)
-rn
-# [1] "3016"   "3017"   "5239"   "5450"   "562d"  
-# [6] "59f9"   "5f11"   "64c0"   "6c0a"   "7081"  
-# [11] "7f4e"   "8552"   "98c3"   "99e1"   "一人"  
-
-rn[1:5] <- c("〖","〗","刹那","吶喊","嘭")
-rn[6:10] <- c("姹","弑","擀","氊","炁")
-rn[11:14] <- c("罎","蕒","飃","駡道")
-
-rownames(dtm) <- rn
-tdm[["dimnames"]][["Terms"]] <-rn
-names(v) <-rn
 
 #※詞彙彼此間重要程度關聯
 #依據第一部份TF-IDF的權重值來做dendrogram的圖示
@@ -70,11 +82,9 @@ dtm <- DocumentTermMatrix(wordcorpus, control = list(wordLengths = c(2, Inf)))
 dtm01 <- weightTfIdf(dtm)
 
 #可以在全部資料構成的矩陣中，手動剔除一些權重值較低的字詞
-#為了方便觀看設作0.87，設更高則怕文字會太擁擠
-dtm02 <- removeSparseTerms(dtm01, 0.895) 
+#為了方便觀看設作0.09，設更高則怕文字會太擁擠
+dtm02 <- removeSparseTerms(dtm01, 0.09) 
 
-#不知為啥還是有亂碼
-dtm02$dimnames$Terms[1:3] = c("剎那","吶喊","駡道")
 
 tdm = as.TermDocumentMatrix(dtm02) 
 tdm <- weightTfIdf(tdm)

@@ -1,6 +1,7 @@
 #文字探勘(Text Mining)實作
 # 
 # －－之別問我為啥挑金庸
+#因為我上課常看(誤)
 
 
 #系統參數設定
@@ -221,7 +222,6 @@ wordcloud2(filter(txt_wordFreq, freq > 200),
            minSize = 2, fontFamily = "Microsoft YaHei", size = 1)
 
 ##比較角色出場頻率
-
 role = read.table("role_list.txt",encoding = "UTF-8",header = T)
 role_freq <- filter(txt_freq,char %in% role$X.U.FEFF.角色名)
 
